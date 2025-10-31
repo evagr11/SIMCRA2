@@ -1,6 +1,5 @@
 package com.example.simcra2.View;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
