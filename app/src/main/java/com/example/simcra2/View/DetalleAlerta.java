@@ -18,10 +18,9 @@ public class DetalleAlerta extends BaseActivity {
 
         Alerta alerta = (Alerta) getIntent().getSerializableExtra("alerta");
 
-        if (alerta != null) {
-            tvTitular.setText(alerta.getTitular());
-            tvContenido.setText(alerta.getContenidoExtendido());
-        }
+        tvTitular.setText(alerta.getTitular());
+        tvContenido.setText(alerta.getContenidoExtendido());
+
 
         configurarBottomNavigation(R.id.nav_alert);
 
