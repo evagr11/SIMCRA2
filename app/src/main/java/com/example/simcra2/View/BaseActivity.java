@@ -28,7 +28,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        agregarBotonDesarrollador(); // ✅ SIEMPRE activo en modo desarrollador
     }
 
     private void agregarBotonDesarrollador() {

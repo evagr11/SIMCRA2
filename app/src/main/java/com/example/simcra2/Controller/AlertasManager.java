@@ -31,7 +31,7 @@ public class AlertasManager {
 
     private static final String PREFS = "PreferenciasApp";
     private static final String CLAVE_INDICE = "indice_alerta_manual";
-    private static final boolean MODO_DESARROLLADOR = true; // Cambia a false en la app automática
+    private static final boolean MODO_DESARROLLADOR = false; // Cambia a false en la app automática
 
     public static List<Alerta> obtenerAlertasDisponibles(Context context) {
         List<Alerta> lista = new ArrayList<>();
