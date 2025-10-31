@@ -96,12 +96,13 @@ public class AlertasManager {
             Alerta alertaDesbloqueada = todas.get(actual + 1);
             String titular = alertaDesbloqueada.getTitular().toLowerCase();
 
-            int nuevoDia = calcularDiaDesdeFecha(alertaDesbloqueada.getFechaHoraOriginal(), context);
-            prefs.edit().putInt(DesaparecidosManager.CLAVE_DIA, nuevoDia).apply();
+            if (titular.contains("fichas abiertas") || titular.contains("reportes") || titular.contains("desaparecidos")) {
+                int nuevoDia = calcularDiaDesdeFecha(alertaDesbloqueada.getFechaHoraOriginal(), context);
+                prefs.edit().putInt(DesaparecidosManager.CLAVE_DIA, nuevoDia).apply();
 
-            // Lanzar notificación
-            NotificacionSimcra.lanzar(context, alertaDesbloqueada);
-
+                // Lanzar notificación
+                NotificacionSimcra.lanzar(context, alertaDesbloqueada.getTitular(), alertaDesbloqueada.getResumen());
+            }
         }
 
         Log.d("AlertasManager", "Avanzado a alerta #" + (actual + 1));
@@ -150,18 +151,19 @@ public class AlertasManager {
         }
     }
 
-    public static void programarNotificacion(Context context, Alerta alerta, long tiempoEnMillis) {
+    public static void programarNotificacion(Context context, String titulo, String mensaje, long tiempoEnMillis) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             if (!alarmManager.canScheduleExactAlarms()) return;
         }
 
         Intent intent = new Intent(context, AlertaReceiver.class);
-        intent.putExtra("id_alerta", alerta.getId()); // ← solo enviamos el ID
+        intent.putExtra("titulo", titulo);
+        intent.putExtra("mensaje", mensaje);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
-                alerta.getId(), // ← ID único por alerta
+                (int) tiempoEnMillis,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
@@ -169,7 +171,6 @@ public class AlertasManager {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, tiempoEnMillis, pendingIntent);
     }
-
 
 
     public static void programarTodasLasAlertas(Context context) {
@@ -182,13 +183,12 @@ public class AlertasManager {
                 Date fechaAlerta = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(fechaStr);
                 long tiempoEnMillis = fechaAlerta.getTime();
 
-                programarNotificacion(context, alerta, tiempoEnMillis); // ← pasa el objeto completo
+                programarNotificacion(context, alerta.getTitular(), alerta.getResumen(), tiempoEnMillis);
             } catch (Exception e) {
                 Log.e("AlertasManager", "Error al programar alerta: " + alerta.getTitular(), e);
             }
         }
     }
-
 
 
     public static void abrirDetalle(Context context, Alerta alerta) {
@@ -323,8 +323,7 @@ public class AlertasManager {
                     // Programar notificación si es relevante
                     String titular = alerta[1].toLowerCase();
                     Date fechaAlerta = legacyFormatter.parse(fechaProgramada);
-                    Alerta alertaObj = new Alerta(fechaProgramada, alerta[1], alerta[2], alerta[3]);
-                    programarNotificacion(context, alertaObj, fechaAlerta.getTime());
+                    programarNotificacion(context, alerta[1], alerta[2], fechaAlerta.getTime());
 
                 }
             }

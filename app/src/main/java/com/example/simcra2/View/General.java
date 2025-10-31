@@ -29,7 +29,6 @@ public class General extends BaseActivity {
     private SensorManager sensorManager;
     private SensorEventListener sensorListener;
     private BroadcastReceiver batteryReceiver;
-
     private TextView txtFecha, txtBateria, txtHardware, txtGiroscopio, txtAcelerometro;
 
     @Override
